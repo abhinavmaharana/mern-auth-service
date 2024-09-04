@@ -1,16 +1,19 @@
 {
-  "name": "mern-auth-service",
-  "version": "1.0.0",
-  "description": "A user management service",
-  "main": "index.js",
-  "scripts": {
-    "dev": "node src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Abhinav Maharana",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^22.5.3",
-    "typescript": "^5.5.4"
-  }
+    "name": "mern-auth-service",
+    "version": "1.0.0",
+    "description": "A user management service",
+    "main": "index.js",
+    "scripts": {
+        "dev": "node src/server.ts",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format:check": "prettier . --check",
+        "format:fix": "prettier . --write"
+    },
+    "author": "Abhinav Maharana",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/node": "^22.5.3",
+        "prettier": "3.3.3",
+        "typescript": "^5.5.4"
+    }
 }
