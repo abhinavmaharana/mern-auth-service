@@ -1,26 +1,28 @@
 {
-    "name": "mern-auth-service",
-    "version": "1.0.0",
-    "description": "A user management service",
-    "main": "index.js",
-    "scripts": {
-        "dev": "node src/server.ts",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "format:check": "prettier . --check",
-        "format:fix": "prettier . --write",
-        "lint": "eslint . ",
-        "lint:fix": "eslint . --fix"
-    },
-    "author": "Abhinav Maharana",
-    "license": "ISC",
-    "devDependencies": {
-        "@eslint/js": "^9.9.1",
-        "@types/eslint__js": "^8.42.3",
-        "@types/node": "^22.5.3",
-        "eslint": "^8.57.0",
-        "eslint-config-prettier": "^9.1.0",
-        "prettier": "3.3.3",
-        "typescript": "^5.5.4",
-        "typescript-eslint": "^8.4.0"
-    }
+  "name": "mern-auth-service",
+  "version": "1.0.0",
+  "description": "A user management service",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format:check": "prettier . --check",
+    "format:fix": "prettier . --write",
+    "lint": "eslint . ",
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky"
+  },
+  "author": "Abhinav Maharana",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^22.5.3",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.5",
+    "prettier": "3.3.3",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.4.0"
+  }
 }
