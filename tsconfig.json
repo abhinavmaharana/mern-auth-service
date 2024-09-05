@@ -106,8 +106,8 @@
         "skipLibCheck": true /* Skip type checking all .d.ts files. */
     },
     "include": [
-    "src/**/*",
-    "jest.config.ts",  // Include Jest config file
-    "app.spec.ts"
-  ],
+        "src/**/*",
+        "jest.config.ts", // Include Jest config file
+        "app.spec.ts"
+    ]
 }
