@@ -108,6 +108,7 @@
     "include": [
         "src/**/*",
         "jest.config.ts", // Include Jest config file
-        "app.spec.ts"
+        "app.spec.ts",
+        "tests/**/*"
     ]
 }

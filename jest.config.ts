@@ -5,6 +5,7 @@ const config: Config = {
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
     },
+    verbose: true,
 };
 
 export default config;
