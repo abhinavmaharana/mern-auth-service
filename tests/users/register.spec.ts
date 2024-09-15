@@ -3,7 +3,7 @@ import app from '../../src/app';
 import { User } from '../../src/entity/User';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../src/config/data-source';
-import { truncateTables } from '../utils';
+import { Roles } from '../../src/constants';
 
 // Define the type for the response body
 interface RegisterResponse {
@@ -18,7 +18,8 @@ describe('POST /auth/register', () => {
     });
 
     beforeEach(async () => {
-        await truncateTables(connection);
+        await connection.dropDatabase();
+        await connection.synchronize();
     });
 
     afterAll(async () => {
@@ -106,6 +107,22 @@ describe('POST /auth/register', () => {
             });
             expect(createdUser).not.toBeNull();
             expect(responseBody.id).toBe(createdUser?.id); // Verify that the id in the response matches the id in the database
+        });
+        it('should assign a customer role', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Abhinav',
+                lastName: 'Maharana',
+                email: 'abhinavmaharana800@gmail.com',
+                password: 'secret',
+            };
+            // Act
+            await request(app).post('/auth/register').send(userData);
+            // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+            expect(users[0]).toHaveProperty('role');
+            expect(users[0].role).toBe(Roles.CUSTOMER);
         });
     });
     describe('Fields are missing', () => {});

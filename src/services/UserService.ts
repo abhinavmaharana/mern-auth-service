@@ -3,6 +3,7 @@ import { User } from '../entity/User';
 import { UserData } from '../types';
 import createHttpError from 'http-errors';
 import logger from '../config/logger';
+import { Roles } from '../constants';
 
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
@@ -19,6 +20,7 @@ export class UserService {
                 lastName,
                 email,
                 password,
+                role: Roles.CUSTOMER,
             });
 
             // Save the user to the database
