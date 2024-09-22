@@ -26,7 +26,7 @@ export class AuthController {
             firstName,
             lastName,
             email,
-            password: '*****',
+            password: '******',
         });
         try {
             const user = await this.userService.create({
