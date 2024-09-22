@@ -4,6 +4,7 @@ import { User } from '../../src/entity/User';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../src/config/data-source';
 import { Roles } from '../../src/constants';
+import { isJwt } from '../utils';
 
 // Define the type for the response body
 interface RegisterResponse {
@@ -159,6 +160,57 @@ describe('POST /auth/register', () => {
             // Assert
             expect(response.statusCode).toBe(400);
             expect(users).toHaveLength(1);
+        });
+        it('should return the access token and refresh token inside a cookie', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Abhinav',
+                lastName: 'Maharana',
+                email: 'abhinavmaharana800@gmail.com',
+                password: 'secret',
+            };
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData);
+
+            // interface Headers {
+            //     ["set-cookie"]: string[];
+            // }
+
+            // Assert
+            let accessToken: string | null = null;
+            let refreshToken: string | null = null;
+
+            // Safely access the "set-cookie" header
+            const cookies = response.headers['set-cookie'] || [];
+
+            if (Array.isArray(cookies)) {
+                cookies.forEach((cookie: string) => {
+                    if (cookie.startsWith('accessToken=')) {
+                        accessToken = cookie.split(';')[0].split('=')[1];
+                    }
+
+                    if (cookie.startsWith('refreshToken=')) {
+                        refreshToken = cookie.split(';')[0].split('=')[1];
+                    }
+                });
+            } else if (typeof cookies === 'string') {
+                // If cookies is a string, handle it accordingly
+                if (cookies.startsWith('accessToken=')) {
+                    accessToken = cookies.split(';')[0].split('=')[1];
+                }
+
+                if (cookies.startsWith('refreshToken=')) {
+                    refreshToken = cookies.split(';')[0].split('=')[1];
+                }
+            }
+            expect(accessToken).not.toBeNull();
+            expect(refreshToken).not.toBeNull();
+
+            expect(isJwt(accessToken)).toBeTruthy();
+            expect(isJwt(refreshToken)).toBeTruthy();
         });
     });
     describe('Fields are missing', () => {
