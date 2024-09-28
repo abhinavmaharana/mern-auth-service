@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import fs from 'fs';
 import { NextFunction, Response } from 'express';
-import { JwtPayload, sign } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import { AuthRequest, RegisterUserRequest } from '../types';
 import { UserService } from '../services/UserService';
 import { Logger } from 'winston';
@@ -10,6 +7,7 @@ import { validationResult } from 'express-validator';
 import { TokenService } from '../services/TokenService';
 import createHttpError from 'http-errors';
 import { CredentialService } from '../services/CredentialService';
+import { Roles } from '../constants';
 
 export class AuthController {
     constructor(
@@ -43,6 +41,7 @@ export class AuthController {
                 lastName,
                 email,
                 password,
+                role: Roles.CUSTOMER,
             });
             this.logger.info('User has been registered', { id: user.id });
 
@@ -76,7 +75,6 @@ export class AuthController {
                 httpOnly: true, // Very important
             });
 
-            // Send the user ID in the response
             res.status(201).json({ id: user.id });
         } catch (err) {
             next(err);
@@ -163,6 +161,76 @@ export class AuthController {
     async self(req: AuthRequest, res: Response) {
         // token req.auth.id
         const user = await this.userService.findById(Number(req.auth.sub));
-        res.json(user);
+        res.json({ ...user, password: undefined });
+    }
+
+    async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            const payload: JwtPayload = {
+                sub: req.auth.sub,
+                role: req.auth.role,
+            };
+
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            const user = await this.userService.findById(Number(req.auth.sub));
+            if (!user) {
+                const error = createHttpError(
+                    400,
+                    'User with the token could not find',
+                );
+                next(error);
+                return;
+            }
+
+            // Persist the refresh token
+            const newRefreshToken =
+                await this.tokenService.persistRefreshToken(user);
+
+            // Delete old refresh token
+            await this.tokenService.deleteRefreshToken(Number(req.auth.id));
+
+            const refreshToken = this.tokenService.generateRefreshToken({
+                ...payload,
+                id: String(newRefreshToken.id),
+            });
+
+            res.cookie('accessToken', accessToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60, // 1h
+                httpOnly: true, // Very important
+            });
+
+            res.cookie('refreshToken', refreshToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 24 * 365, // 1y
+                httpOnly: true, // Very important
+            });
+
+            this.logger.info('User has been logged in', { id: user.id });
+            res.json({ id: user.id });
+        } catch (err) {
+            next(err);
+            return;
+        }
+    }
+
+    async logout(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            await this.tokenService.deleteRefreshToken(Number(req.auth.id));
+            this.logger.info('Refresh token has been deleted', {
+                id: req.auth.id,
+            });
+            this.logger.info('User has been logged out', { id: req.auth.sub });
+
+            res.clearCookie('accessToken');
+            res.clearCookie('refreshToken');
+            res.json({});
+        } catch (err) {
+            next(err);
+            return;
+        }
     }
 }
