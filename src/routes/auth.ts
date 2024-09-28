@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import express, { NextFunction, Request, Response } from 'express';
 import { AuthController } from '../controllers/AuthController';
 import { UserService } from '../services/UserService';

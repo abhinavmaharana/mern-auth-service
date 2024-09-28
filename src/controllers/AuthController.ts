@@ -18,6 +18,7 @@ export class AuthController {
         private tokenService: TokenService,
         private credentialService: CredentialService,
     ) {}
+
     async register(
         req: RegisterUserRequest,
         res: Response,
@@ -82,6 +83,7 @@ export class AuthController {
             return;
         }
     }
+
     async login(req: RegisterUserRequest, res: Response, next: NextFunction) {
         // Validation
         const result = validationResult(req);
@@ -157,9 +159,10 @@ export class AuthController {
             return;
         }
     }
+
     async self(req: AuthRequest, res: Response) {
         // token req.auth.id
         const user = await this.userService.findById(Number(req.auth.sub));
-        res.json({ ...user, password: undefined });
+        res.json(user);
     }
 }
